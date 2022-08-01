@@ -7,14 +7,22 @@
 
 import SwiftUI
 
+struct themes {
+    static let vehicleTheme = ["🚗","🚌","🚑","🚜","🛴","🚲","🚔","🛺","🚘","🚃","🚄","🚠","🚅","✈️","🚀","🛸","🚁","🛶","🚤","🚢","🛳","🚓","🚛","🛵"]
+    static let partyTheme = ["🥳", "🎈", "🍺", "🎂", "🍾", "🍸", "🧁", "🎉"]
+    static let foodTheme = ["🍈", "🍇", "🥞", "🥨", "🧇", "🍗", "🍔", "🍕", "🧆"]
+}
+
 struct ContentView: View {
-    var emojis = ["🚗","🚌","🚑","🚜","🛴","🚲","🚔","🛺","🚘","🚃","🚄","🚠","🚅","✈️","🚀","🛸","🚁","🛶","🚤","🚢","🛳","🚓","🚛","🛵"]
-    @State var emojiCount = 4
+    @State var selectedTheme = themes.vehicleTheme
     var body: some View {
         VStack {
+            Spacer()
+            Text("Memorize!")
+                .font(.largeTitle)
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
-                    ForEach(emojis[0..<emojiCount], id: \.self) { emoji in
+                    ForEach(selectedTheme.shuffled(), id: \.self) { emoji in
                         CardView(content: emoji).aspectRatio(2/3, contentMode: .fit) // id: \.self is here since ForEach requires the elements to be Identifiable. id: \.self makes them self-identifying.
                     }
                 }
@@ -23,32 +31,50 @@ struct ContentView: View {
             
             Spacer()
             HStack {
-                remove
                 Spacer()
-                add
+                vehicleTheme
+                Spacer()
+                partyTheme
+                Spacer()
+                foodTheme
+                Spacer()
             }
             .padding(.horizontal)
-            .font(.largeTitle)
+            
         }
         .padding(.horizontal)
     }
     
-    var remove: some View {
+    var vehicleTheme: some View {
         Button {
-            if emojiCount > 1 {
-                emojiCount -= 1
-            }
+            self.selectedTheme = themes.vehicleTheme
         } label: {
-            Image(systemName: "minus.circle")
+            VStack {
+                Image(systemName: "car").font(.largeTitle)
+                Text("Vehicles")
+            }
         }
     }
-    var add: some View {
+    
+    var partyTheme: some View {
         Button {
-            if emojiCount < emojis.count {
-                emojiCount += 1
-            }
+            self.selectedTheme = themes.partyTheme
         } label: {
-            Image(systemName: "plus.circle")
+            VStack {
+                Image(systemName: "person.3").font(.largeTitle)
+                Text("Party")
+            }
+        }
+    }
+    
+    var foodTheme: some View {
+        Button {
+            self.selectedTheme = themes.foodTheme
+        } label: {
+            VStack {
+                Image(systemName: "fork.knife").font(.largeTitle)
+                Text("Foods")
+            }
         }
     }
 }
