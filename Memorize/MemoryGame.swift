@@ -6,11 +6,14 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct MemoryGame<CardContent> where CardContent: Equatable {
     private(set) var cards: Array<Card>
+    private(set) var theme: MemoryGameTheme<CardContent>
+    private(set) var score = 0
     
-    init(numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent) {
+    init(numberOfPairsOfCards: Int, theme gameTheme: MemoryGameTheme<CardContent>, cardContentFactory: (Int) -> CardContent) {
         cards = []
         // Add numberOfPairsOfCards x 2 cards
         for pairIndex in 0..<max(2, numberOfPairsOfCards) {
@@ -18,6 +21,8 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
             cards.append(Card(content: content, id: "\(pairIndex + 1)a"))
             cards.append(Card(content: content, id: "\(pairIndex + 1)b"))
         }
+        cards.shuffle()
+        self.theme = gameTheme
     }
     
     var indexOfTheOneAnyOnlyFaceUpCard: Int? {
@@ -32,6 +37,19 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                     if cards[chosenIndex].content == cards[potentialMatchIndex].content {
                         cards[chosenIndex].isMatched = true
                         cards[potentialMatchIndex].isMatched = true
+                        score += 2
+                    } else {
+                        // if any of the cards are seen before, decrease the score by 1
+                        if cards[chosenIndex].isSeen {
+                            score -= 1
+                        } else {
+                            cards[chosenIndex].isSeen = true
+                        }
+                        if cards[potentialMatchIndex].isSeen {
+                            score -= 1
+                        } else {
+                            cards[potentialMatchIndex].isSeen = true
+                        }
                     }
                 } else {
                     indexOfTheOneAnyOnlyFaceUpCard = chosenIndex
@@ -43,13 +61,13 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     
     mutating func shuffle() {
         cards.shuffle()
-        print(cards)
     }
     
     struct Card: Equatable, Identifiable, CustomDebugStringConvertible {
         
         var isFaceUp = false
         var isMatched = false
+        var isSeen = false
         let content: CardContent
         var id: String
         
